@@ -3,7 +3,7 @@ import Button from "../components/ui/button";
 
 export default function Home() {
   return (
-    <div className="w-full h-full max-w-2xl max-h-120 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 px-8 w-full max-w-2xl">
         <ImageContainer />
 
         <div className="flex gap-4">

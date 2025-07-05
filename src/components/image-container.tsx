@@ -31,11 +31,16 @@ export default function ImageContainer() {
   };
 
   return (
-    <div className={"flex-grow border border-primary/20 rounded-lg relative overflow-hidden"}>
+    <div className={cn(
+        "flex-grow border border-primary/20 rounded-lg", 
+        "relative max-w-2xl w-full h-110", 
+        "overflow-x-hidden overflow-y-scroll"
+    )}>
       {images.length > 0 && (
-       <div className="flex flex-wrap gap-4 p-4">
-          {images.map((image) => (
+       <div className="flex flex-wrap gap-4 p-4 overflow-y-scroll overflow-x-hidden">
+          {images.map((image, index) => (
             <ImageListDisplay 
+                key={index}
                 image={image} 
                 onRemove={() => {
                     setImages((prev) => prev.filter((i) => i !== image));
