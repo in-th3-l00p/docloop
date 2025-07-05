@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useRef } from "react";
 import cn from "classnames";
 import Button from "./ui/button";
+import ImageListDisplay from "./image-list-display";
 
 export default function ImageContainer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,17 +35,12 @@ export default function ImageContainer() {
       {images.length > 0 && (
        <div className="flex flex-wrap gap-4 p-4">
           {images.map((image) => (
-            <Button 
-              variant="secondary"
-              className="w-32 h-32 rounded-md"
-            >
-                <img 
-                    src={image} 
-                    alt="uploaded" 
-                    className="w-full h-full object-contain select-none pointer-events-none"
-                    draggable={false}
-                />
-            </Button>
+            <ImageListDisplay 
+                image={image} 
+                onRemove={() => {
+                    setImages((prev) => prev.filter((i) => i !== image));
+                }} 
+            />
           ))}
           <Button 
             variant="secondary"
