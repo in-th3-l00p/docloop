@@ -369,6 +369,7 @@ dependencies = [
 name = "doc-maker"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "cfg-if 1.0.1",
  "js-sys",
  "printpdf",

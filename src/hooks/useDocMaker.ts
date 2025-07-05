@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import initDocMaker, { type InitOutput } from "doc-maker";
 
 export type DocMaker = {
-    toPdf: (images: string[]) => void;
+    toPdf: (images: string[]) => string;
     loading: boolean;
     error: string | null;
 }
@@ -23,8 +23,9 @@ export default function useDocMaker() {
                 return;
             }
             setProcessing(true);
-            wasm.to_pdf(images);
+            const pdf = wasm.to_pdf(images);
             setProcessing(false);
+            return pdf;
         },
         loading: wasm === null || processing,
         error,

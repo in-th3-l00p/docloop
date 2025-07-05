@@ -18,7 +18,7 @@ export default function Home() {
         <div className="flex gap-4">
             <Button 
               disabled={docMaker.loading} 
-              onClick={() => docMaker.toPdf(images)}
+              onClick={() => console.log(docMaker.toPdf(images))}
             >generate</Button>
             <Button variant="secondary" onClick={() => setImages([])}>reset</Button>
         </div>

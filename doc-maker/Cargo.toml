@@ -9,6 +9,7 @@ authors = ["in-th3-l00p"]
 crate-type=["cdylib", "rlib"]
 
 [dependencies]
+base64 = "0.22.1"
 cfg-if = "1.0.1"
 js-sys = "0.3"
 printpdf = "0.8.2"
