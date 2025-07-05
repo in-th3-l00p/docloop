@@ -42,7 +42,10 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
         "overflow-x-hidden overflow-y-scroll"
     )}>
       {images.length > 0 && (
-       <div className="flex flex-wrap gap-4 p-4 overflow-y-scroll overflow-x-hidden">
+        <div className={cn(
+          "grid xxs:grid-cols-2 xs:grid-cols-3 sm:grid-cols-4", 
+          "mx-auto gap-4 p-4 overflow-y-scroll overflow-x-hidden"
+        )}>
           {images.map((image, index) => (
             <ImageListDisplay 
                 key={index}

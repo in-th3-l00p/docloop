@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+    --breakpoint-xxs: 22.5rem;
+    --breakpoint-xs: 31rem;
     --color-primary: #fff;
     --color-secondary: #D923BA;
     --color-accent: #F06292;
