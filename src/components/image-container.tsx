@@ -2,7 +2,7 @@ import { type Dispatch, type SetStateAction, useRef } from "react";
 import cn from "classnames";
 import Button from "./ui/button";
 import ImageListDisplay from "./image-list-display";
-import useDocMaker, { type DocMaker } from "../hooks/useDocMaker";
+import { type DocMaker } from "../hooks/useDocMaker";
 
 interface ImageContainerProps {
   docMaker: DocMaker;
@@ -50,6 +50,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
                 onRemove={() => {
                     setImages((prev) => prev.filter((i) => i !== image));
                 }} 
+                index={index}
             />
           ))}
           <Button 
@@ -73,7 +74,8 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
       {images.length === 0 && (
         <div 
           className={cn(
-            "h-full flex justify-center items-center cursor-pointer hover:bg-primary/5 transition-colors"
+            "h-full flex justify-center items-center cursor-pointer", 
+            "hover:bg-primary/5 transition-colors"
           )}
           onClick={handleContainerClick}
         >
