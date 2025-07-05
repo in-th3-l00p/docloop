@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRef } from "react";
 import cn from "classnames";
 import Button from "./ui/button";
 import ImageListDisplay from "./image-list-display";
+import initDocMaker from "../../doc-maker/pkg/doc_maker";
 
 export default function ImageContainer() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    initDocMaker().then((instance) => {
+      instance.hello();
+    });
+  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
