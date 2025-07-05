@@ -34,7 +34,17 @@ export default function ImageContainer() {
       {images.length > 0 && (
        <div className="flex flex-wrap gap-4 p-4">
           {images.map((image) => (
-            <img src={image} alt="uploaded" className="w-32 h-32 object-cover" />
+            <Button 
+              variant="secondary"
+              className="w-32 h-32 rounded-md"
+            >
+                <img 
+                    src={image} 
+                    alt="uploaded" 
+                    className="w-full h-full object-contain select-none pointer-events-none"
+                    draggable={false}
+                />
+            </Button>
           ))}
           <Button 
             variant="secondary"
