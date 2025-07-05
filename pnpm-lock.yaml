@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  doc-maker: link:../Library/pnpm/global/5/node_modules/doc-maker
+
 importers:
 
   .:
@@ -14,6 +17,9 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
+      doc-maker:
+        specifier: link:../Library/pnpm/global/5/node_modules/doc-maker
+        version: link:../Library/pnpm/global/5/node_modules/doc-maker
       react:
         specifier: ^19.1.0
         version: 19.1.0
