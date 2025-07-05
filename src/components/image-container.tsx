@@ -38,7 +38,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   return (
     <div className={cn(
         "flex-grow border border-primary/20 rounded-lg", 
-        "relative max-w-2xl w-full h-110", 
+        "relative max-w-2xl w-full h-113", 
         "overflow-x-hidden overflow-y-scroll"
     )}>
       {images.length > 0 && (
