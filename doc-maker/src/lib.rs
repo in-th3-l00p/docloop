@@ -1,4 +1,5 @@
 use wasm_bindgen::prelude::*;
+use js_sys::Array;
 
 #[wasm_bindgen]
 extern "C" {
@@ -7,6 +8,10 @@ extern "C" {
 }
 
 #[wasm_bindgen]
-pub fn hello() {
-    log("Hello, world!");
+pub fn to_pdf(images: Array) {
+    for i in 0..images.length() {
+        if let Some(image) = images.get(i).as_string() {
+            log(&format!("image: {}", image));
+        }
+    }
 }

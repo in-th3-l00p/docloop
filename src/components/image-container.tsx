@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
-import { useRef } from "react";
+import { type Dispatch, type SetStateAction, useRef } from "react";
 import cn from "classnames";
 import Button from "./ui/button";
 import ImageListDisplay from "./image-list-display";
-import initDocMaker from "../../doc-maker/pkg/doc_maker";
+import useDocMaker, { type DocMaker } from "../hooks/useDocMaker";
 
-export default function ImageContainer() {
+interface ImageContainerProps {
+  docMaker: DocMaker;
+  images: string[];
+  setImages: Dispatch<SetStateAction<string[]>>;
+}
+
+export default function ImageContainer({ docMaker, images, setImages }: ImageContainerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [images, setImages] = useState<string[]>([]);
-
-  useEffect(() => {
-    initDocMaker().then((instance) => {
-      instance.hello();
-    });
-  }, []);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -58,6 +56,7 @@ export default function ImageContainer() {
             variant="secondary"
             className="w-32 h-32 flex justify-center items-center !text-4xl"
             onClick={handleContainerClick}
+            disabled={docMaker.loading}
           >+</Button>
         </div> 
       )}
