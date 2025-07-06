@@ -11,7 +11,7 @@ export default function ImageListDisplay({ image, onRemove, index }: ImageListDi
     return (
         <Button 
             variant="secondary"
-            className="w-32 h-32 rounded-md relative group"
+            className="w-32 h-32 rounded-md relative group justify-self-center"
             onClick={onRemove}
         >
             <div className={cn(

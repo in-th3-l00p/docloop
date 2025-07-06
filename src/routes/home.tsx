@@ -40,7 +40,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-8 w-full max-w-2xl">
+    <div className="flex flex-col gap-4 px-8 w-full">
         <ImageContainer 
             docMaker={docMaker}
             images={images} 
@@ -49,10 +49,14 @@ export default function Home() {
 
         <div className="flex gap-4">
             <Button 
-              disabled={docMaker.loading} 
+              disabled={docMaker.loading || images.length === 0} 
               onClick={handleGeneratePdf}
             >generate</Button>
-            <Button variant="secondary" onClick={() => setImages([])}>reset</Button>
+            <Button 
+              variant="secondary" 
+              onClick={() => setImages([])}
+              disabled={docMaker.loading || images.length === 0}
+            >reset</Button>
         </div>
     </div>
   );
