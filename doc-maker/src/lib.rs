@@ -1,8 +1,10 @@
 use wasm_bindgen::prelude::*;
 use js_sys::{Array, JsString};
-use printpdf::{image::RawImage, Mm, PdfDocument, PdfPage, PdfSaveOptions, PdfWarnMsg, XObjectTransform};
+use printpdf::{image::RawImage, Mm, PdfDocument, PdfPage, PdfSaveOptions, PdfWarnMsg, Pt, Px, XObjectTransform};
 use base64::{self, prelude::BASE64_STANDARD, Engine};
 use printpdf::Op::UseXobject;
+
+const DEFAULT_DPI: f32 = 300.0;
 
 #[wasm_bindgen]
 extern "C" {
@@ -32,6 +34,10 @@ fn get_image_from_base64(
     RawImage::decode_from_bytes(&decoded, warnings)
 }
 
+fn px_to_mm(px: usize) -> Mm {
+    Mm::from(Px(px).into_pt(DEFAULT_DPI))
+}
+
 #[wasm_bindgen]
 pub fn to_pdf(images: Array) -> JsString {
     let mut doc = PdfDocument::new("Hello world");
@@ -42,8 +48,8 @@ pub fn to_pdf(images: Array) -> JsString {
         match get_image_from_base64(&image, &mut warnings) {
             Ok(image) => {
                 pages.push(PdfPage::new(
-                    Mm(image.width as f32),
-                    Mm(image.height as f32),
+                    px_to_mm(image.width),
+                    px_to_mm(image.height),
                     vec!(
                         UseXobject {
                             id: doc.add_image(&image),
@@ -57,7 +63,7 @@ pub fn to_pdf(images: Array) -> JsString {
             }
         }
     }
-    
+
     let base64_string = BASE64_STANDARD.encode(
         doc
             .with_pages(pages)
