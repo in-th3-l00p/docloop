@@ -1,7 +1,8 @@
 use wasm_bindgen::prelude::*;
 use js_sys::{Array, JsString};
-use printpdf::{PdfDocument, PdfSaveOptions, image::RawImage, PdfPage, Mm};
+use printpdf::{image::RawImage, Mm, PdfDocument, PdfPage, PdfSaveOptions, PdfWarnMsg, XObjectTransform};
 use base64::{self, prelude::BASE64_STANDARD, Engine};
+use printpdf::Op::UseXobject;
 
 #[wasm_bindgen]
 extern "C" {
@@ -12,42 +13,55 @@ extern "C" {
     fn error(s: &str);
 }
 
+fn get_image_from_base64(
+    image: &JsValue,
+    warnings: &mut Vec<PdfWarnMsg>
+) -> Result<RawImage, String> {
+    let image_base64 = match image.as_string() {
+        Some(image_base64) => image_base64,
+        None => {
+            return Err("error occured when getting image base64".to_string());
+        }
+    };
+    let image_base64 = image_base64
+        .split(";base64,")
+        .nth(1)
+        .unwrap()
+        .to_string();
+    let decoded = BASE64_STANDARD.decode(image_base64).unwrap();
+    RawImage::decode_from_bytes(&decoded, warnings)
+}
+
 #[wasm_bindgen]
 pub fn to_pdf(images: Array) -> JsString {
     let mut doc = PdfDocument::new("Hello world");
     let mut warnings = Vec::new();
 
-    let page = PdfPage::new(Mm(10.0), Mm(10.0), vec!());
-    doc.with_pages(vec!(page));
-
-    // for image in images.iter() {
-    //     let image_base64 = match image.as_string() {
-    //         Some(image_base64) => image_base64,
-    //         None => {
-    //             error("error occured when getting image base64");
-    //             continue;
-    //         }
-    //     };
-    //     let image_base64 = image_base64
-    //         .split(";base64,")
-    //         .nth(1)
-    //         .unwrap()
-    //         .to_string();
-    //     let decoded = BASE64_STANDARD.decode(image_base64).unwrap();
-    //     let image = &RawImage::decode_from_bytes(&decoded, &mut warnings);
-    //     match image {
-    //         Ok(image) => {
-    //             doc.add_image(image);
-    //         }
-    //         Err(e) => {
-    //             error(&format!("error occured when decoding image: {:?}", e));
-    //             continue;
-    //         }
-    //     }
-    // }
+    let mut pages = Vec::new();
+    for image in images.iter() {
+        match get_image_from_base64(&image, &mut warnings) {
+            Ok(image) => {
+                pages.push(PdfPage::new(
+                    Mm(image.width as f32),
+                    Mm(image.height as f32),
+                    vec!(
+                        UseXobject {
+                            id: doc.add_image(&image),
+                            transform: XObjectTransform::default(),
+                        }
+                    )
+                ));
+            }
+            Err(e) => {
+                error(&format!("error occured when adding image: {:?}", e));
+            }
+        }
+    }
     
     let base64_string = BASE64_STANDARD.encode(
-        doc.save(&PdfSaveOptions::default(), &mut warnings)
+        doc
+            .with_pages(pages)
+            .save(&PdfSaveOptions::default(), &mut warnings)
     );
     JsString::from(base64_string)
 }
