@@ -57,7 +57,7 @@ export default function ImageListDisplay({
             className={cn(
                 "relative transition-all duration-200 ease-out",
                 isDragging && "opacity-50 scale-95 rotate-2 z-20",
-                isDragOver && "scale-105 ring-2 ring-secondary/50 ring-offset-2 ring-offset-base",
+                isDragOver && "scale-105",
                 "group"
             )}
             draggable={true}
@@ -72,7 +72,6 @@ export default function ImageListDisplay({
                     "bg-secondary/10 backdrop-blur-sm z-10",
                     "flex items-center justify-center"
                 )}>
-                    <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" />
                 </div>
             )}
 
@@ -82,7 +81,6 @@ export default function ImageListDisplay({
                     "w-32 h-32 rounded-md relative group/btn justify-self-center",
                     "transition-all duration-200 cursor-pointer",
                     isDragging && "cursor-grabbing",
-                    !isDragging && "hover:shadow-lg hover:shadow-secondary/20"
                 )}
                 onClick={handleClick}
             >
@@ -92,20 +90,6 @@ export default function ImageListDisplay({
                     "absolute top-2 left-2 z-10"
                 )}>
                     {index + 1}
-                </div>
-
-                <div className={cn(
-                    "absolute top-2 right-2 opacity-0 group-hover:opacity-60 transition-opacity z-10",
-                    "text-primary/60 text-xs"
-                )}>
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-                        <circle cx="3" cy="3" r="1"/>
-                        <circle cx="9" cy="3" r="1"/>
-                        <circle cx="3" cy="6" r="1"/>
-                        <circle cx="9" cy="6" r="1"/>
-                        <circle cx="3" cy="9" r="1"/>
-                        <circle cx="9" cy="9" r="1"/>
-                    </svg>
                 </div>
 
                 <img 

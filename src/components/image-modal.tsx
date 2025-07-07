@@ -46,14 +46,12 @@ export default function ImageModal({
         onClose();
     };
 
-    // Extract basic image info
     const getImageInfo = () => {
         try {
             const [header, data] = image.split(',');
             const mimeMatch = header.match(/data:([^;]+)/);
             const mimeType = mimeMatch ? mimeMatch[1] : 'Unknown';
             
-            // Estimate file size from base64 string
             const sizeInBytes = Math.round((data.length * 3) / 4);
             const sizeInKB = (sizeInBytes / 1024).toFixed(1);
             
@@ -82,7 +80,6 @@ export default function ImageModal({
                 className="max-w-lg"
             >
                 <div className="space-y-6">
-                    {/* Image Preview */}
                     <div className={cn(
                         "relative bg-primary/5 rounded-lg overflow-hidden",
                         "border border-primary/10 aspect-square"
@@ -93,7 +90,6 @@ export default function ImageModal({
                             className="w-full h-full object-contain"
                         />
                         
-                        {/* Image overlay with info */}
                         <div className={cn(
                             "absolute bottom-0 left-0 right-0",
                             "bg-gradient-to-t from-base/80 to-transparent",
@@ -106,7 +102,6 @@ export default function ImageModal({
                         </div>
                     </div>
 
-                    {/* Image Information */}
                     <div className="space-y-3">
                         <h3 className="text-sm font-medium text-primary/80">Image Details</h3>
                         <div className="grid grid-cols-2 gap-4 text-xs">
@@ -129,7 +124,6 @@ export default function ImageModal({
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-3 pt-4 border-t border-primary/10">
                         <Button
                             variant="secondary"
@@ -162,7 +156,6 @@ export default function ImageModal({
                 </div>
             </Modal>
 
-            {/* Hidden file input for replacement */}
             <input
                 ref={fileInputRef}
                 type="file"
