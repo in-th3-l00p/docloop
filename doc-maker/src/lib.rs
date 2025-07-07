@@ -1,6 +1,7 @@
 use wasm_bindgen::prelude::*;
 use js_sys::{Array, JsString};
-use printpdf::{image::RawImage, Mm, PdfDocument, PdfPage, PdfSaveOptions, PdfWarnMsg, Pt, Px, XObjectTransform};
+use printpdf::{image::RawImage, Mm, PdfDocument, PdfPage, PdfSaveOptions, PdfWarnMsg, Px, XObjectTransform};
+
 use base64::{self, prelude::BASE64_STANDARD, Engine};
 use printpdf::Op::UseXobject;
 

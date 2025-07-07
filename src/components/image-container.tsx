@@ -13,7 +13,6 @@ interface ImageContainerProps {
 export default function ImageContainer({ docMaker, images, setImages }: ImageContainerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [dragCounter, setDragCounter] = useState(0);
   
   const dragEnterTimeoutRef = useRef<number | null>(null);
   const dragLeaveTimeoutRef = useRef<number | null>(null);
@@ -63,8 +62,6 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
       dragLeaveTimeoutRef.current = null;
     }
 
-    setDragCounter(prev => prev + 1);
-    
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
       if (dragEnterTimeoutRef.current) {
         clearTimeout(dragEnterTimeoutRef.current);
@@ -81,30 +78,19 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     e.preventDefault();
     e.stopPropagation();
     
-    setDragCounter(prev => {
-      const newCounter = prev - 1;
-      
-      if (newCounter <= 0) {
-        if (dragEnterTimeoutRef.current) {
-          clearTimeout(dragEnterTimeoutRef.current);
-          dragEnterTimeoutRef.current = null;
-        }
-        
-        if (dragLeaveTimeoutRef.current) {
-          clearTimeout(dragLeaveTimeoutRef.current);
-        }
-        
-        dragLeaveTimeoutRef.current = setTimeout(() => {
-          setIsDragOver(false);
-          setDragCounter(0);
-          dragLeaveTimeoutRef.current = null;
-        }, 100);
-        
-        return 0;
-      }
-      
-      return newCounter;
-    });
+    if (dragEnterTimeoutRef.current) {
+      clearTimeout(dragEnterTimeoutRef.current);
+      dragEnterTimeoutRef.current = null;
+    }
+    
+    if (dragLeaveTimeoutRef.current) {
+      clearTimeout(dragLeaveTimeoutRef.current);
+    }
+    
+    dragLeaveTimeoutRef.current = setTimeout(() => {
+      setIsDragOver(false);
+      dragLeaveTimeoutRef.current = null;
+    }, 100);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -126,7 +112,6 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     }
     
     setIsDragOver(false);
-    setDragCounter(0);
 
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
