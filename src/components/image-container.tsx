@@ -2,6 +2,7 @@ import { type Dispatch, type SetStateAction, useRef, useState, useEffect } from 
 import cn from "classnames";
 import Button from "./ui/button";
 import ImageListDisplay from "./image-list-display";
+import ImageModal from "./image-modal";
 import { type DocMaker } from "../hooks/useDocMaker";
 
 interface ImageContainerProps {
@@ -17,6 +18,10 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDraggingFile, setIsDraggingFile] = useState(false);
+  
+  // Modal state
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const dragEnterTimeoutRef = useRef<number | null>(null);
   const dragLeaveTimeoutRef = useRef<number | null>(null);
@@ -172,12 +177,23 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     }
   };
 
-  const handleImageReplace = (index: number, newImage: string) => {
-    setImages((prev) => {
-      const newImages = [...prev];
-      newImages[index] = newImage;
-      return newImages;
-    });
+  // Modal handlers
+  const handleImageClick = (index: number) => {
+    setSelectedImageIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedImageIndex(null);
+  };
+
+  const handleDeleteImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleReplaceImage = (index: number, newImage: string) => {
+    setImages((prev) => prev.map((img, i) => i === index ? newImage : img));
   };
 
   return (
@@ -215,10 +231,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
             <ImageListDisplay 
                 key={`${image}-${index}`}
                 image={image} 
-                onRemove={() => {
-                    setImages((prev) => prev.filter((i) => i !== image));
-                }} 
-                onReplace={(newImage) => handleImageReplace(index, newImage)}
+                onImageClick={() => handleImageClick(index)} 
                 index={index}
                 isDragging={draggedIndex === index}
                 isDragOver={dragOverIndex === index}
@@ -264,6 +277,18 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
             drop your images here, or click to upload
           </p>
         </div>
+      )}
+
+      {/* Image Modal */}
+      {selectedImageIndex !== null && (
+        <ImageModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          image={images[selectedImageIndex]}
+          index={selectedImageIndex}
+          onDelete={() => handleDeleteImage(selectedImageIndex)}
+          onReplace={(newImage) => handleReplaceImage(selectedImageIndex, newImage)}
+        />
       )}
     </div>
   );
