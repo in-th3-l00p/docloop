@@ -13,7 +13,10 @@ interface ImageContainerProps {
 export default function ImageContainer({ docMaker, images, setImages }: ImageContainerProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [_dragCounter, setDragCounter] = useState(0);
+  
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   
   const dragEnterTimeoutRef = useRef<number | null>(null);
   const dragLeaveTimeoutRef = useRef<number | null>(null);
@@ -63,17 +66,21 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
       dragLeaveTimeoutRef.current = null;
     }
 
-    setDragCounter(prev => prev + 1);
-    
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      if (dragEnterTimeoutRef.current) {
-        clearTimeout(dragEnterTimeoutRef.current);
-      }
+      const hasFiles = Array.from(e.dataTransfer.items).some(item => item.kind === 'file');
       
-      dragEnterTimeoutRef.current = setTimeout(() => {
-        setIsDragOver(true);
-        dragEnterTimeoutRef.current = null;
-      }, 50);
+      if (hasFiles && draggedIndex === null) {
+        setIsDraggingFile(true);
+        
+        if (dragEnterTimeoutRef.current) {
+          clearTimeout(dragEnterTimeoutRef.current);
+        }
+        
+        dragEnterTimeoutRef.current = setTimeout(() => {
+          setIsDragOver(true);
+          dragEnterTimeoutRef.current = null;
+        }, 50);
+      }
     }
   };
 
@@ -81,30 +88,22 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     e.preventDefault();
     e.stopPropagation();
     
-    setDragCounter(prev => {
-      const newCounter = prev - 1;
-      
-      if (newCounter <= 0) {
-        if (dragEnterTimeoutRef.current) {
-          clearTimeout(dragEnterTimeoutRef.current);
-          dragEnterTimeoutRef.current = null;
-        }
-        
-        if (dragLeaveTimeoutRef.current) {
-          clearTimeout(dragLeaveTimeoutRef.current);
-        }
-        
-        dragLeaveTimeoutRef.current = setTimeout(() => {
-          setIsDragOver(false);
-          setDragCounter(0);
-          dragLeaveTimeoutRef.current = null;
-        }, 100);
-        
-        return 0;
+    if (dragEnterTimeoutRef.current) {
+      clearTimeout(dragEnterTimeoutRef.current);
+      dragEnterTimeoutRef.current = null;
+    }
+    
+    if (dragLeaveTimeoutRef.current) {
+      clearTimeout(dragLeaveTimeoutRef.current);
+    }
+    
+    dragLeaveTimeoutRef.current = setTimeout(() => {
+      if (isDraggingFile) {
+        setIsDragOver(false);
+        setIsDraggingFile(false);
       }
-      
-      return newCounter;
-    });
+      dragLeaveTimeoutRef.current = null;
+    }, 100);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -126,11 +125,50 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     }
     
     setIsDragOver(false);
-    setDragCounter(0);
+    setIsDraggingFile(false);
 
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       processFiles(files);
+    }
+  };
+
+  const handleImageDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index.toString());
+  };
+
+  const handleImageDragEnd = () => {
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleImageDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleImageDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    
+    if (draggedIndex === null || draggedIndex === dropIndex) return;
+
+    const newImages = [...images];
+    const draggedImage = newImages[draggedIndex];
+    
+    newImages.splice(draggedIndex, 1);
+    
+    newImages.splice(dropIndex, 0, draggedImage);
+    
+    setImages(newImages);
+    setDraggedIndex(null);
+    setDragOverIndex(null);
+  };
+
+  const handleImageDragOverItem = (index: number) => {
+    if (draggedIndex !== null && draggedIndex !== index) {
+      setDragOverIndex(index);
     }
   };
 
@@ -140,7 +178,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
         "flex-grow border-2 border-dashed rounded-lg transition-all duration-200", 
         "relative max-w-2xl w-full h-113", 
         "overflow-x-hidden overflow-y-scroll",
-        isDragOver 
+        isDragOver && isDraggingFile
           ? "border-primary/60 bg-base/50 shadow-lg" 
           : "border-primary/20 hover:border-primary/30"
       )}
@@ -149,7 +187,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {isDragOver && (
+      {isDragOver && isDraggingFile && (
         <div className={cn(
           "absolute inset-0 z-10 bg-base/80 opacity- rounded-lg",
           "flex items-center justify-center backdrop-blur-sm"
@@ -167,12 +205,19 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
         )}>
           {images.map((image, index) => (
             <ImageListDisplay 
-                key={index}
+                key={`${image}-${index}`}
                 image={image} 
                 onRemove={() => {
                     setImages((prev) => prev.filter((i) => i !== image));
                 }} 
                 index={index}
+                isDragging={draggedIndex === index}
+                isDragOver={dragOverIndex === index}
+                onDragStart={handleImageDragStart}
+                onDragEnd={handleImageDragEnd}
+                onDragOver={() => handleImageDragOverItem(index)}
+                onDrop={handleImageDrop}
+                draggedIndex={draggedIndex}
             />
           ))}
           <Button 
