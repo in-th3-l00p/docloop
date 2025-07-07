@@ -172,6 +172,14 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     }
   };
 
+  const handleImageReplace = (index: number, newImage: string) => {
+    setImages((prev) => {
+      const newImages = [...prev];
+      newImages[index] = newImage;
+      return newImages;
+    });
+  };
+
   return (
     <div 
       className={cn(
@@ -210,6 +218,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
                 onRemove={() => {
                     setImages((prev) => prev.filter((i) => i !== image));
                 }} 
+                onReplace={(newImage) => handleImageReplace(index, newImage)}
                 index={index}
                 isDragging={draggedIndex === index}
                 isDragOver={dragOverIndex === index}
