@@ -199,7 +199,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   return (
     <div 
       className={cn(
-        "flex-grow border-2 border-dashed rounded-lg transition-all duration-200", 
+        "flex-grow border-2 rounded-lg transition-all duration-200", 
         "relative max-w-2xl w-full h-113", 
         "overflow-x-hidden overflow-y-scroll",
         isDragOver && isDraggingFile
@@ -246,7 +246,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
             variant="secondary"
             className={cn(
               "w-32 h-32 flex justify-center items-center !text-4xl justify-self-center",
-              "border-2 border-dashed border-primary/30 hover:border-primary/50",
+              "border-2 border-primary/5 hover:border-primary/50",
               "transition-all duration-200 hover:bg-primary/5"
             )}
             onClick={handleContainerClick}
