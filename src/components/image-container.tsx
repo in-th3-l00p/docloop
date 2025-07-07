@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import { type Dispatch, type SetStateAction, useRef, useState, useEffect } from "react";
 import cn from "classnames";
 import Button from "./ui/button";
 import ImageListDisplay from "./image-list-display";
@@ -14,6 +14,20 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [dragCounter, setDragCounter] = useState(0);
+  
+  const dragEnterTimeoutRef = useRef<number | null>(null);
+  const dragLeaveTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (dragEnterTimeoutRef.current) {
+        clearTimeout(dragEnterTimeoutRef.current);
+      }
+      if (dragLeaveTimeoutRef.current) {
+        clearTimeout(dragLeaveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const processFiles = (files: FileList) => {
     Array.from(files).forEach((file) => {
@@ -43,21 +57,54 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (dragLeaveTimeoutRef.current) {
+      clearTimeout(dragLeaveTimeoutRef.current);
+      dragLeaveTimeoutRef.current = null;
+    }
+
     setDragCounter(prev => prev + 1);
     
     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-      setIsDragOver(true);
+      if (dragEnterTimeoutRef.current) {
+        clearTimeout(dragEnterTimeoutRef.current);
+      }
+      
+      dragEnterTimeoutRef.current = setTimeout(() => {
+        setIsDragOver(true);
+        dragEnterTimeoutRef.current = null;
+      }, 50);
     }
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setDragCounter(prev => prev - 1);
     
-    if (dragCounter <= 1) {
-      setIsDragOver(false);
-    }
+    setDragCounter(prev => {
+      const newCounter = prev - 1;
+      
+      if (newCounter <= 0) {
+        if (dragEnterTimeoutRef.current) {
+          clearTimeout(dragEnterTimeoutRef.current);
+          dragEnterTimeoutRef.current = null;
+        }
+        
+        if (dragLeaveTimeoutRef.current) {
+          clearTimeout(dragLeaveTimeoutRef.current);
+        }
+        
+        dragLeaveTimeoutRef.current = setTimeout(() => {
+          setIsDragOver(false);
+          setDragCounter(0);
+          dragLeaveTimeoutRef.current = null;
+        }, 100);
+        
+        return 0;
+      }
+      
+      return newCounter;
+    });
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -68,6 +115,16 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    if (dragEnterTimeoutRef.current) {
+      clearTimeout(dragEnterTimeoutRef.current);
+      dragEnterTimeoutRef.current = null;
+    }
+    if (dragLeaveTimeoutRef.current) {
+      clearTimeout(dragLeaveTimeoutRef.current);
+      dragLeaveTimeoutRef.current = null;
+    }
+    
     setIsDragOver(false);
     setDragCounter(0);
 
@@ -84,7 +141,7 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
         "relative max-w-2xl w-full h-113", 
         "overflow-x-hidden overflow-y-scroll",
         isDragOver 
-          ? "border-blue-400 bg-blue-50/50 shadow-lg" 
+          ? "border-primary/60 bg-base/50 shadow-lg" 
           : "border-primary/20 hover:border-primary/30"
       )}
       onDragEnter={handleDragEnter}
@@ -92,21 +149,14 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
-      {/* Drag overlay */}
       {isDragOver && (
         <div className={cn(
-          "absolute inset-0 z-10 bg-blue-500/10 rounded-lg",
+          "absolute inset-0 z-10 bg-base/80 opacity- rounded-lg",
           "flex items-center justify-center backdrop-blur-sm"
         )}>
-          <div className="text-center">
-            <div className="text-6xl mb-4">📁</div>
-            <p className="text-blue-600 font-semibold text-lg">
-              Drop your images here
-            </p>
-            <p className="text-blue-500 text-sm mt-1">
-              Release to upload
-            </p>
-          </div>
+          <p className="text-primary/40 text-sm mt-1">
+            release to upload
+          </p>
         </div>
       )}
 
@@ -151,21 +201,14 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
         <div 
           className={cn(
             "h-full flex flex-col justify-center items-center cursor-pointer", 
-            "hover:bg-primary/5 transition-all duration-200",
+            "hover:bg-primary/5 transition-all",
             "text-center p-8"
           )}
           onClick={handleContainerClick}
         >
-          <div className="text-8xl mb-6 opacity-20">🖼️</div>
-          <p className="text-primary/60 text-lg font-medium mb-2">
-            Drag & drop your images here
+          <p className="text-primary/40 text-sm font-medium mb-2">
+            drop your images here, or click to upload
           </p>
-          <p className="text-primary/40 text-sm mb-4">
-            or click to browse and upload
-          </p>
-          <div className="text-xs text-primary/30 bg-primary/5 px-3 py-1 rounded-full">
-            Supports: JPG, PNG, GIF, WEBP
-          </div>
         </div>
       )}
     </div>
