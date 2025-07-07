@@ -53,7 +53,7 @@ export default function Home() {
         <div className="flex gap-4 items-center mb-4 text-sm">
           <Link href="/about" variant="light">about</Link>
           <Circle />
-          <Link href="/donate" variant="light">donate</Link>
+          <Link href="https://buymeacoffee.com/inth3l00p" variant="light">sponsor me</Link>
           <Circle />
           <Link href="https://tiscacatalin.com" variant="light">author</Link>
         </div>
