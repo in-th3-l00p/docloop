@@ -58,7 +58,7 @@ export default function ImageListDisplay({
                 "relative transition-all duration-200 ease-out",
                 isDragging && "opacity-50 scale-95 rotate-2 z-20",
                 isDragOver && "scale-105",
-                "group"
+                "group w-32 h-32 mx-auto"
             )}
             draggable={true}
             onDragStart={handleDragStart}
