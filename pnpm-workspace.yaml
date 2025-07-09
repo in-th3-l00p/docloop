@@ -1,5 +1,5 @@
 packages:
-  - "doc-maker"
+  - "doc-maker/pkg"
   - "."
 
 ignoredBuiltDependencies:
