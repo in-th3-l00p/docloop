@@ -4,16 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:doc-maker": "cd doc-maker && wasm-pack build --target web",
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build:doc-maker": "pnpm --filter doc-maker build:release",
+    "dev": "pnpm build:doc-maker && vite",
+    "build": "pnpm build:doc-maker && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "classnames": "^2.5.1",
-    "doc-maker": "link:../Library/pnpm/global/5/node_modules/doc-maker",
+    "doc-maker": "workspace:*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.6.3",

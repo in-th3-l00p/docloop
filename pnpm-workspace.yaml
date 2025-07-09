@@ -1,5 +1,6 @@
+packages:
+  - "doc-maker"
+  - "."
+
 ignoredBuiltDependencies:
   - esbuild
-
-overrides:
-  doc-maker: link:../Library/pnpm/global/5/node_modules/doc-maker
