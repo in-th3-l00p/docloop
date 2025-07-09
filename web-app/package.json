@@ -4,9 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "pnpm build:doc-maker",
     "dev": "vite",
-    "prebuild": "pnpm build:doc-maker",
     "build:doc-maker": "cd ../doc-maker && wasm-pack build --target web --release --out-dir pkg",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
