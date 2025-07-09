@@ -34,23 +34,28 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm build
 
-      - name: upload build to server via scp (custom port)
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.host }}
-          username: ${{ secrets.user }}
-          key: ${{ secrets.ssh_key }}
-          port: ${{ secrets.ssh_port }}
-          source: dist/*
-          target: ~/doc-maker-app
+      - name: verify build output
+        run: ls -la dist/
 
-      - name: reload or start pm2 process via ssh (custom port)
-        uses: appleboy/ssh-action@master
+      - name: upload build to server via scp
+        uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.host }}
-          username: ${{ secrets.user }}
-          key: ${{ secrets.ssh_key }}
-          port: ${{ secrets.ssh_port }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          source: "dist/*"
+          target: "~/docloop"
+          timeout: 60s
+          command_timeout: 15m
+
+      - name: reload or start pm2 process via ssh
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd ~/doc-maker-app
-            pm2 reload ${{ secrets.pm2_app_name }} || pm2 start "npx serve -s ." --name "${{ secrets.pm2_app_name }}"
+            cd ~/docloop
+            pm2 reload ${{ secrets.PM2_PROCESS }} || pm2 start "npx serve -s ." --name "${{ secrets.PM2_PROCESS }}"
