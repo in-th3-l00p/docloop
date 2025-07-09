@@ -3,7 +3,6 @@ import ImageContainer from "../components/image-container";
 import Button from "../components/ui/button";
 import useDocMaker from "../hooks/useDocMaker";
 import Circle from "../components/ui/circle";
-import Separator from "../components/ui/separator";
 import Link from "../components/ui/link";
 
 export default function Home() {
@@ -51,8 +50,6 @@ export default function Home() {
         </p>
 
         <div className="flex gap-4 items-center mb-4 text-sm">
-          <Link href="/about" variant="light">about</Link>
-          <Circle />
           <Link href="https://buymeacoffee.com/inth3l00p" variant="light">sponsor me</Link>
           <Circle />
           <Link href="https://tiscacatalin.com" variant="light">author</Link>
