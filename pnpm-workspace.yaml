@@ -1,6 +1,0 @@
-packages:
-  - "doc-maker/pkg"
-  - "."
-
-ignoredBuiltDependencies:
-  - esbuild
