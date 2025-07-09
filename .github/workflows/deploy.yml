@@ -13,8 +13,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: set up rust
-        uses: actions/setup-rust@v1
-
+        uses: dtolnay/rust-toolchain@stable
+        
       - name: install wasm-pack
         run: cargo install wasm-pack
 
