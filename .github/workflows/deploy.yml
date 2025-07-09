@@ -21,7 +21,13 @@ jobs:
       - name: set up node + pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 9
+
+      - name: set up node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
 
       - name: install dependencies and build frontend
         run: |

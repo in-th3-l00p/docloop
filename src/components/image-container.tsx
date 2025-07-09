@@ -149,11 +149,6 @@ export default function ImageContainer({ docMaker, images, setImages }: ImageCon
     setDragOverIndex(null);
   };
 
-  const handleImageDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
-  };
-
   const handleImageDrop = (e: React.DragEvent, dropIndex: number) => {
     e.preventDefault();
     
