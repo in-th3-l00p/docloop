@@ -44,7 +44,7 @@ export default function Home() {
   return (
     <div className="space-y-12 py-24">
       <section className="relative">
-        <h1 className="text-5xl font-bold mb-2">pdfloop</h1>
+        <h1 className="text-5xl font-bold mb-2">docloop</h1>
         <p className="text-sm text-primary/80 mb-4">
           completely free to use, generate pdfs from images
         </p>
